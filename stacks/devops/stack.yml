@@ -2,7 +2,7 @@ version: "3"
 
 services:
   jenkins:
-    image: 127.0.0.1:5000/jenkins
+    image: 127.0.0.1:5000/rpi-jenkins
     ports:
       - "8081:8080"
     volumes:
