@@ -4,17 +4,16 @@ pipeline {
   stages {
     stage("Build") {
       steps {
-        echo "Building..."
-      }
-    }
-    stage("Test") {
-      steps {
-        echo "Testing..."
+        dir("dockerfiles") {
+          sh "build.sh"
+        }
       }
     }
     stage("Deploy") {
       steps {
-        echo "Deploying..."
+        dir("stacks") {
+          sh "deploy.sh"
+        }
       }
     }
   }
