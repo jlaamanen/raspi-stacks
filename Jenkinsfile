@@ -5,14 +5,14 @@ pipeline {
     stage("Build") {
       steps {
         dir("dockerfiles") {
-          sh "build.sh"
+          sh "./build.sh"
         }
       }
     }
     stage("Deploy") {
       steps {
         dir("stacks") {
-          sh "deploy.sh"
+          sh "./deploy.sh"
         }
       }
     }
