@@ -1,0 +1,34 @@
+version: "3.7"
+
+services:
+  unifi:
+    image: ryansch/unifi-rpi:latest
+    networks:
+      - "outside"
+    volumes:
+      # Unifi v5.0.7 creates all of these directories (some remain empty)
+      - config:/var/lib/unifi
+      - log:/usr/lib/unifi/logs
+      - log2:/var/log/unifi
+      - run:/usr/lib/unifi/run
+      - run2:/run/unifi
+      - work:/usr/lib/unifi/work
+
+networks:
+  outside:
+    external: true
+    name: "host"
+
+volumes:
+  config:
+    driver: local
+  log:
+    driver: local
+  log2:
+    driver: local
+  run:
+    driver: local
+  run2:
+    driver: local
+  work:
+    driver: local

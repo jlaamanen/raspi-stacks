@@ -1,0 +1,21 @@
+version: "3"
+
+services:
+  jenkins:
+    image: 127.0.0.1:5000/jenkins
+    ports:
+      - "8081:8080"
+    volumes:
+      - jenkins-data:/var/jenkins_home
+      - jenkins-log:/var/log/jenkins
+      - ~/.ssh:/root/.ssh:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  registry:
+    image: budry/registry-arm:2.6.2
+    ports:
+      - "5000:5000"
+
+volumes:
+  jenkins-data:
+  jenkins-log:
