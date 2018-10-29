@@ -6,6 +6,6 @@ for DIR in */ ; do
   STACK_NAME=${DIR%?}
 
   echo "Deploying stack ${STACK_NAME}..."
-  docker stack deploy -c ${STACK_NAME}/stack.yml ${STACK_NAME}
+  docker stack deploy --resolve-image never -c ${STACK_NAME}/stack.yml ${STACK_NAME}
   echo "Deploy finished for stack ${STACK_NAME}"
 done
