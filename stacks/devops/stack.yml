@@ -8,7 +8,7 @@ services:
     volumes:
       - jenkins-data:/var/jenkins_home
       - jenkins-log:/var/log/jenkins
-      - ~/.ssh:/root/.ssh:ro
+      - /home/pi/.ssh:/root/.ssh:ro
       - /var/run/docker.sock:/var/run/docker.sock
 
   registry:
