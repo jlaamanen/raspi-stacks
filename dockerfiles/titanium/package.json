@@ -1,0 +1,27 @@
+{
+  "name": "titanium",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "node -r ts-node/register -r dotenv/config src/app",
+    "build": "tsc",
+    "start": "node -r dotenv/config build/app"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^14.14.25",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.1.5"
+  },
+  "dependencies": {
+    "axios": "^0.21.1",
+    "date-fns": "^2.17.0",
+    "dotenv": "^8.2.0",
+    "fastify": "^3.11.0",
+    "ics": "^2.26.2"
+  }
+}
