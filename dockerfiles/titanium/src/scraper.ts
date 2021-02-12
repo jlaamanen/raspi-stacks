@@ -169,7 +169,12 @@ function dateToIcsDate(date: Date) {
 function workShiftsToIcs(shifts: WorkShift[]) {
   const { error, value } = createEvents(
     shifts.map((shift) => ({
-      title: `Työvuoro ${shift.type}`,
+      title:
+        shift.type === "C"
+          ? "Aamuvuoro"
+          : shift.type === "P"
+          ? "Iltavuoro"
+          : `Työvuoro ${shift.type}`,
       start: dateToIcsDate(shift.start),
       end: dateToIcsDate(shift.end),
       description: `${shift.periodCycle} ${shift.unitName}`,
@@ -179,4 +184,9 @@ function workShiftsToIcs(shifts: WorkShift[]) {
     throw error;
   }
   return value;
+}
+
+export function clearCalendar() {
+  writeFileSync(icsFilePath, "");
+  console.log("Cleared calendar data");
 }
