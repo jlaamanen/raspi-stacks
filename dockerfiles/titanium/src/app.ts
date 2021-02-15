@@ -39,9 +39,10 @@ async function start() {
    */
   app.get("/clear", async (req, reply) => {
     clearCalendar();
+    reply.status(200).send("Calendar cleared");
   });
 
-  new CronJob(config.updateCron, async () => {
+  const job = new CronJob(config.updateCron, async () => {
     console.log("Updating calendar automatically...");
     const start = Number(new Date());
     try {
@@ -52,6 +53,31 @@ async function start() {
     } catch (error) {
       console.error("Error updating calendar:", error);
     }
+  });
+  job.start();
+
+  function getCronStatus() {
+    return {
+      running: job.running,
+      lastDate: job.lastDate(),
+      nextDate: job.nextDate(),
+    };
+  }
+
+  app.get("/cron/pause", async (req, reply) => {
+    job.stop();
+    console.log("Paused cron job");
+    reply.status(200).send(getCronStatus());
+  });
+
+  app.get("/cron/start", async (req, reply) => {
+    job.start();
+    console.log("Started cron job");
+    reply.status(200).send(getCronStatus());
+  });
+
+  app.get("/cron", async (req, reply) => {
+    reply.status(200).send(getCronStatus());
   });
 
   await app.listen(config.port, "0.0.0.0");
