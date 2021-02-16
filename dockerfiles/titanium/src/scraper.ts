@@ -139,6 +139,7 @@ async function authenticate(username: string, password: string) {
 export async function updateCalendar() {
   const now = new Date();
   const dates = [
+    addMonths(now, 2),
     addMonths(now, 1),
     now,
     subMonths(now, 1),
