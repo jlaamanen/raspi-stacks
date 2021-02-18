@@ -75,14 +75,18 @@ export async function getWorkShifts(dateInMonth: Date) {
     config.sessionId || (await authenticate(config.username, config.password));
 
   // Fetch data
-  const { data } = await axios.post<WorkShiftResponse>(
-    "https://hrmpublic.services.plat.fi/nokiaomatitania/rest/pwtFindEventsOfPerson",
-    {
-      sessionId: base64encode(sessionId),
-      language: base64encode("fi"),
-      navigateDate: base64encode(format(dateInMonth, "yyyy/MM")),
-    }
-  );
+  const { data } = await axios
+    .post<WorkShiftResponse>(
+      "https://hrmpublic.services.plat.fi/nokiaomatitania/rest/pwtFindEventsOfPerson",
+      {
+        sessionId: base64encode(sessionId),
+        language: base64encode("fi"),
+        navigateDate: base64encode(format(dateInMonth, "yyyy/MM")),
+      }
+    )
+    .catch((error) => {
+      throw error.message;
+    });
   return data.weekInfo.reduce(
     (shifts, week) => [
       ...shifts,
@@ -93,7 +97,7 @@ export async function getWorkShifts(dateInMonth: Date) {
             (shifts, data) => [
               ...shifts,
               // Skip shifts with an explanation - indicates a day off
-              ...(data.shiftCodeExplanation
+              ...(!data || data.shiftCodeExplanation
                 ? []
                 : [
                     {

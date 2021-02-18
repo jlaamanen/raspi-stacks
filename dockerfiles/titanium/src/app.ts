@@ -29,7 +29,7 @@ async function start() {
       );
       reply.status(200).send("Calendar updated");
     } catch (error) {
-      console.error("Error updating calendar:", error);
+      console.error("Error updating calendar manually:", error);
       reply.status(500).send("Error updating calendar");
     }
   });
@@ -48,10 +48,10 @@ async function start() {
     try {
       await updateCalendar();
       console.log(
-        `Calendar updated manually in ${Number(new Date()) - start} ms`
+        `Calendar updated automatically in ${Number(new Date()) - start} ms`
       );
     } catch (error) {
-      console.error("Error updating calendar:", error);
+      console.error("Error updating calendar automatically:", error);
     }
   });
   job.start();
