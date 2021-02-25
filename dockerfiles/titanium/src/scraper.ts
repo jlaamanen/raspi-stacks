@@ -5,10 +5,13 @@ import config from "./config";
 import { base64encode } from "./utils";
 import { createEvents } from "ics";
 import { writeFileSync } from "fs";
-import axiosRetry from "axios-retry";
+import type axiosRetry from "axios-retry";
+
+// TS types for axios-retry are retarded and there really is no default export
+const retry: typeof axiosRetry = require("axios-retry");
 
 // Retry requests on error
-axiosRetry(axios, { retries: 3 });
+retry(axios, { retries: 5 });
 
 type ShiftCode = "P" | "C" | "V" | "H" | "c";
 
