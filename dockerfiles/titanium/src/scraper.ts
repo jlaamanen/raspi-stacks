@@ -5,6 +5,12 @@ import config from "./config";
 import { base64encode } from "./utils";
 import { createEvents } from "ics";
 import { writeFileSync } from "fs";
+import axiosRetry from "axios-retry";
+
+// Retry requests on error
+axiosRetry(axios, { retries: 3 });
+
+type ShiftCode = "P" | "C" | "V" | "H" | "c";
 
 interface WorkShiftResponse {
   weekInfo: {
@@ -32,7 +38,7 @@ interface WorkShiftResponse {
         /**
          * Shift code (maybe same as tCode?)
          */
-        packetCode: "P" | "C" | "V" | "H";
+        packetCode: ShiftCode;
         /**
          * Period cycle.
          * e.g. "2/T32"
@@ -54,7 +60,7 @@ interface WorkShiftResponse {
 }
 
 interface WorkShift {
-  type: "P" | "C" | "V" | "H";
+  code: ShiftCode;
   periodCycle: string;
   unitName: string;
   start: Date;
@@ -69,24 +75,30 @@ function convertDateFromResponse(fullDayDate: string, time: string) {
   return parse(`${date} ${time}`, "d.M.yyyy HH:mm", new Date());
 }
 
+function convertShiftCodeToTitle(code: ShiftCode) {
+  return (
+    {
+      C: "Aamuvuoro",
+      c: "Aamuvuoro",
+      P: "Iltavuoro",
+    }[code] ?? `Työvuoro ${code}`
+  );
+}
+
 export async function getWorkShifts(dateInMonth: Date) {
   // Use existing session if possible, otherwise re-authenticate
   const sessionId =
     config.sessionId || (await authenticate(config.username, config.password));
 
   // Fetch data
-  const { data } = await axios
-    .post<WorkShiftResponse>(
-      "https://hrmpublic.services.plat.fi/nokiaomatitania/rest/pwtFindEventsOfPerson",
-      {
-        sessionId: base64encode(sessionId),
-        language: base64encode("fi"),
-        navigateDate: base64encode(format(dateInMonth, "yyyy/MM")),
-      }
-    )
-    .catch((error) => {
-      throw error.message;
-    });
+  const { data } = await axios.post<WorkShiftResponse>(
+    "https://hrmpublic.services.plat.fi/nokiaomatitania/rest/pwtFindEventsOfPerson",
+    {
+      sessionId: base64encode(sessionId),
+      language: base64encode("fi"),
+      navigateDate: base64encode(format(dateInMonth, "yyyy/MM")),
+    }
+  );
   return data.weekInfo.reduce(
     (shifts, week) => [
       ...shifts,
@@ -100,8 +112,8 @@ export async function getWorkShifts(dateInMonth: Date) {
               ...(!data || data.shiftCodeExplanation
                 ? []
                 : [
-                    {
-                      type: data.packetCode,
+                    <WorkShift>{
+                      code: data.packetCode,
                       periodCycle: data.periodCycle,
                       unitName: data.scUnitName,
                       start: convertDateFromResponse(
@@ -174,12 +186,7 @@ function dateToIcsDate(date: Date) {
 function workShiftsToIcs(shifts: WorkShift[]) {
   const { error, value } = createEvents(
     shifts.map((shift) => ({
-      title:
-        shift.type === "C"
-          ? "Aamuvuoro"
-          : shift.type === "P"
-          ? "Iltavuoro"
-          : `Työvuoro ${shift.type}`,
+      title: convertShiftCodeToTitle(shift.code),
       start: dateToIcsDate(shift.start),
       end: dateToIcsDate(shift.end),
       description: `${shift.periodCycle} ${shift.unitName}`,
