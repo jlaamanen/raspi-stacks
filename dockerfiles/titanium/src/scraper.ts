@@ -1,5 +1,5 @@
 import axios from "axios";
-import { addMonths, format, parse, subMonths } from "date-fns";
+import { addMonths, format, isEqual, parse, subMonths } from "date-fns";
 import { join } from "path";
 import config from "./config";
 import { base64encode } from "./utils";
@@ -168,7 +168,18 @@ export async function updateCalendar() {
   const shifts = (
     await Promise.all(dates.map((date) => getWorkShifts(date)))
   ).reduce(
-    (allShifts, newShifts) => [...allShifts, ...newShifts],
+    (allShifts, newShifts) => [
+      ...allShifts,
+      ...newShifts.filter(
+        (newShift) =>
+          // Filter possible duplicates - there may be duplicate dates returned on overlapping requests
+          !allShifts.some(
+            (otherShift) =>
+              isEqual(otherShift.start, newShift.start) &&
+              isEqual(otherShift.end, newShift.end)
+          )
+      ),
+    ],
     <WorkShift[]>[]
   );
   const icsData = workShiftsToIcs(shifts);
