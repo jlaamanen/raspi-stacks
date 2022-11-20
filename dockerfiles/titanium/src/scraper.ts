@@ -1,11 +1,18 @@
 import axios from "axios";
-import { addMonths, format, isEqual, parse, subMonths } from "date-fns";
+import type axiosRetry from "axios-retry";
+import {
+  addMinutes,
+  addMonths,
+  format,
+  isEqual,
+  parse,
+  subMonths,
+} from "date-fns";
+import { writeFileSync } from "fs";
+import { createEvents } from "ics";
 import { join } from "path";
 import config from "./config";
 import { base64encode } from "./utils";
-import { createEvents } from "ics";
-import { writeFileSync } from "fs";
-import type axiosRetry from "axios-retry";
 
 // TS types for axios-retry are retarded and there really is no default export
 const retry: typeof axiosRetry = require("axios-retry");
@@ -73,9 +80,21 @@ interface WorkShift {
 export const icsFilePath = join(__dirname, config.icsFileName);
 
 function convertDateFromResponse(fullDayDate: string, time: string) {
+  // In some erroneous cases the API might return "24:00" - in this case just convert it to a valid timestamp
+  const nextDayAtMidnight = time === "24:00";
   // Full day contains weekday in front - discard it
   const [, date] = fullDayDate.split(/\s+/);
-  return parse(`${date} ${time}`, "d.M.yyyy HH:mm", new Date());
+  const result = parse(
+    `${date} ${nextDayAtMidnight ? "23:59" : time}`,
+    "d.M.yyyy HH:mm",
+    new Date()
+  );
+
+  // Add the missing 1 minute if needed
+  if (nextDayAtMidnight) {
+    return addMinutes(result, 1);
+  }
+  return result;
 }
 
 function convertShiftCodeToTitle(code: ShiftCode) {
