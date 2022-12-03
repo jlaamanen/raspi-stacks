@@ -201,6 +201,116 @@ export async function updateCalendar() {
     ],
     <WorkShift[]>[]
   );
+  // Manually add shifts that are unavailable
+  shifts.push(
+    {
+      code: "C",
+      start: new Date("2023-01-09T07:00"),
+      end: new Date("2023-01-09T14:15"),
+      periodCycle: "01/23",
+      unitName: "-",
+    },
+    {
+      code: "C",
+      start: new Date("2023-01-10T07:00"),
+      end: new Date("2023-01-10T15:30"),
+      periodCycle: "01/23",
+      unitName: "-",
+    },
+    {
+      code: "C",
+      start: new Date("2023-01-11T07:00"),
+      end: new Date("2023-01-11T15:30"),
+      periodCycle: "01/23",
+      unitName: "-",
+    },
+    {
+      code: "P",
+      start: new Date("2023-01-13T14:30"),
+      end: new Date("2023-01-13T21:30"),
+      periodCycle: "01/23",
+      unitName: "-",
+    },
+    {
+      code: "P",
+      start: new Date("2023-01-14T14:30"),
+      end: new Date("2023-01-14T21:30"),
+      periodCycle: "01/23",
+      unitName: "-",
+    },
+    {
+      code: "P",
+      start: new Date("2023-01-15T14:30"),
+      end: new Date("2023-01-15T21:30"),
+      periodCycle: "01/23",
+      unitName: "-",
+    },
+    {
+      //
+      code: "C",
+      start: new Date("2023-01-17T07:00"),
+      end: new Date("2023-01-17T15:30"),
+      periodCycle: "01/23",
+      unitName: "-",
+    },
+    {
+      code: "C",
+      start: new Date("2023-01-18T07:00"),
+      end: new Date("2023-01-18T14:30"),
+      periodCycle: "01/23",
+      unitName: "-",
+    },
+    {
+      code: "C",
+      start: new Date("2023-01-19T07:00"),
+      end: new Date("2023-01-19T14:30"),
+      periodCycle: "01/23",
+      unitName: "-",
+    },
+    {
+      code: "C",
+      start: new Date("2023-01-20T07:00"),
+      end: new Date("2023-01-20T14:30"),
+      periodCycle: "01/23",
+      unitName: "-",
+    },
+    {
+      //
+      code: "C",
+      start: new Date("2023-01-23T07:00"),
+      end: new Date("2023-01-23T14:30"),
+      periodCycle: "01/23",
+      unitName: "-",
+    },
+    {
+      code: "C",
+      start: new Date("2023-01-24T07:00"),
+      end: new Date("2023-01-24T15:30"),
+      periodCycle: "01/23",
+      unitName: "-",
+    },
+    {
+      code: "C",
+      start: new Date("2023-01-25T07:00"),
+      end: new Date("2023-01-25T14:30"),
+      periodCycle: "01/23",
+      unitName: "-",
+    },
+    {
+      code: "C",
+      start: new Date("2023-01-26T07:00"),
+      end: new Date("2023-01-26T14:30"),
+      periodCycle: "01/23",
+      unitName: "-",
+    },
+    {
+      code: "C",
+      start: new Date("2023-01-27T07:00"),
+      end: new Date("2023-01-27T14:30"),
+      periodCycle: "01/23",
+      unitName: "-",
+    }
+  );
   const icsData = workShiftsToIcs(shifts);
   writeFileSync(icsFilePath, icsData);
   console.log(`Successfully updated ${shifts.length} shifts to the ICS file`);
